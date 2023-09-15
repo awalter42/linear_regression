@@ -6,6 +6,7 @@ theta0 = 0
 theta1 = 0
 learningRate = 1
 nb_values = 0
+nb_itter = 0
 
 def show_data(tab):
 	fig, ax = plt.subplots()
@@ -19,11 +20,11 @@ def show_data(tab):
 
 	ma = np.arange(0, 250000, 1000)
 	func = estimatePrice(ma)
-	# func = no(ma)
 
 	ax.scatter(mileage, price)
 	ax.plot(ma, func)
 	plt.show()
+
 
 def fillTab(file_name):
 	file = open(file_name, "r")
@@ -46,22 +47,26 @@ def estimatePrice(mileage):
 def training(tab):
 	global theta0
 	global theta1
+	global nb_itter
 	global nb_values
 	global learningRate
 	tmpTheta0 = 0
 	tmpTheta1 = 0
+
+	nb_itter += 1
 
 	for mileage, price in tab:
 		tmpTheta0 += estimatePrice(mileage) - price
 		tmpTheta1 += (estimatePrice(mileage) - price) * mileage
 		nb_values += 1
 
-	learningRate0 = (1.4 * (1 **((1 + nb_values) // 1))) / len(tab)
-	learningRate1 = (0.4 * (0.4 **((1 + nb_values) // 1))) / len(tab)
-	tmpTheta0 *= learningRate0
-	tmpTheta1 *= learningRate1
+	learningRate = (1000 * (0.1 **((1 + nb_itter) // 1))) / len(tab)
+	# learningRate = 1
+	# learningRate1 = (0.4 * (0.4 **((1 + nb_values) // 1))) / len(tab)
+	tmpTheta0 *= learningRate
+	tmpTheta1 *= learningRate
 
-	tmpTheta0 = abs(tmpTheta0)
+	# tmpTheta0 = abs(tmpTheta0)
 	print (tmpTheta0)
 
 	theta0 = ((theta0 * (nb_values - len(tab))) + (tmpTheta0 * len(tab))) / nb_values
@@ -70,8 +75,11 @@ def training(tab):
 if __name__ == '__main__':
 	tab = fillTab("data.csv")
 	tab.sort()
-	training(tab)
 
+	for i in range (20):
+		training(tab)
+
+	print ()
 	print (estimatePrice (240000))
 
 	show_data(tab)
