@@ -1,27 +1,36 @@
 import matplotlib.pyplot as plt
 from statistics import mean
 import numpy as np
+import math
 
 
 def estimatePrice(mileage, model):
 	return (model.getTheta0() + (model.getTheta1() * mileage))
 
 
+def	normalizeElem(list, elem):
+	return ((elem - min(list)) / (max(list) - min(list)))
+
+
+def	denormalizeElem(list, elem):
+	return ((elem * (max(list) - min(list))) + min(list))
+
+
 class Model:
 
 	def __init__(self):
-		self.theta0 = 9000
-		self.theta1 = -0.1
-		self.learningRate = 0.01
+		self.theta0 = 0
+		self.theta1 = 0
+		self.learningRate = 0.1
 		self.nb_itter = 0
 
 		self.file = input('File with dataset: ')
 		try:
-			self.originalTab = self._fillTab()
+			self.originalTab = self.__fillTab()
 		except:
 			print("There has been a problem with the file you sent")
 			return -1
-		self.tab = self._standardize()
+		self.tab = self.__normalize()
 
 		self.loopTrain(1000)
 
@@ -34,6 +43,12 @@ theta1 = {self.theta1}
 learning rate = {self.learningRate}
 iteration = {self.nb_itter}
 """)
+
+	def getOriginalTabs(self):
+		mileage = [self.originalTab[i][0] for i in range(len(self.originalTab))]
+		price = [self.originalTab[i][1] for i in range(len(self.originalTab))]
+
+		return mileage, price
 
 
 	def getNbItter(self):
@@ -50,7 +65,7 @@ iteration = {self.nb_itter}
 		return (self.theta1)
 
 
-	def _fillTab(self):
+	def __fillTab(self):
 		file = open(self.file, "r")
 		file.readline()
 		tab = []
@@ -58,27 +73,25 @@ iteration = {self.nb_itter}
 			splitted = line.split(",")
 			splitted[0] = int(splitted[0])
 			splitted[1] = int(splitted[1])
-			# splitted[1] = 1000
 			tab.append(splitted)
 		return (tab)
 
 
-	def _standardize(self):
-		mile = [self.originalTab[i][0] for i in range(len(self.originalTab))]
-		price = [self.originalTab[i][1] for i in range(len(self.originalTab))]
-		mean_val = mean(mile)
+	def __normalize(self):
+		mileages = [self.originalTab[i][0] for i in range(len(self.originalTab))]
+		prices = [self.originalTab[i][1] for i in range(len(self.originalTab))]
 
-		variance = 0
-		for i in range(len(mile)):
-			variance += (mile[i] - mean_val)**2
-		variance /= len(mile)
-		stan_dev = variance**(1/2)
-		for i in range(len(mile)):
-			mile[i] = (mile[i] - mean_val)/stan_dev
-
-		print(mean_val, stan_dev)
-
-		new_tab = [[mile[i], price[i]] for i in range(len(mile))]
+		x = []
+		y = []
+		minM = min(mileages)
+		maxM = max(mileages)
+		for mileage in mileages:
+			x.append((mileage - minM) / (maxM - minM))
+		minP = min(prices)
+		maxP = max(prices)
+		for price in prices:
+			y.append((price - minP) / (maxP - minP))
+		new_tab = [[x[i], y[i]] for i in range(len(x))]
 		return new_tab
 
 
@@ -90,18 +103,15 @@ iteration = {self.nb_itter}
 
 	def loopTrain(self, iterations):
 		for _ in range(iterations):
-			self._training()
+			self.__training()
 
 
-	def _training(self):
-		tmpTheta0 = sum(estimatePrice(self.tab[i][0], self) - self.tab[i][1] for i in range(len(self.tab)))
-		tmpTheta1 = sum((estimatePrice(self.tab[i][0], self) - self.tab[i][1]) * self.tab[i][0] for i in range(len(self.tab)))
-
+	def __training(self):
+		tmpTheta0 = sum((estimatePrice(m, self) - p) for m, p in self.tab)
+		tmpTheta1 = sum(((estimatePrice(m, self) - p) * m) for m, p in self.tab)
+		
 		tmpTheta0 /= len(self.tab)	
 		tmpTheta1 /= len(self.tab)
-
-		# if self.nb_itter % 10 == 0:
-		# 	print (tmpTheta0, tmpTheta1)
 
 		tmpTheta0 *= self.learningRate
 		tmpTheta1 *= self.learningRate
@@ -111,11 +121,18 @@ iteration = {self.nb_itter}
 
 		self.nb_itter += 1
 
-		# theta0 = ((theta0 * (nb_values - len(tab))) + (tmpTheta0 * len(tab))) / nb_values
-		# theta1 = ((theta1 * (nb_values - len(tab))) + (tmpTheta1 * len(tab))) / nb_values
+
+	def saveThetas(self):
+		try:
+			f = open('thetas.csv', 'w')
+			f.write('theta0,theta1\n')
+			f.write(f'{self.theta0},{self.theta1}')
+			f.close()
+		except:
+			print('there has been a problem saving the thetas')
 
 
-	def showData(self, show_func):
+	def showData(self):
 		fig, ax = plt.subplots()
 
 		mileage = []
@@ -124,10 +141,14 @@ iteration = {self.nb_itter}
 			mileage.append(row[0])
 			price.append(row[1])
 
+		funcLineX = [float(min(mileage)), float(max(mileage))]
+		funcLineY = []
+		for e in funcLineX:
+			e = estimatePrice(normalizeElem(mileage, e), self)
+			funcLineY.append(denormalizeElem(price, e))
+
 		ma = np.arange(0, 250000, 1000)
 		func = estimatePrice(ma, self)
 
-		ax.scatter(mileage, price)
-		if show_func is True:
-			ax.plot(ma, func)
+		ax.plot(mileage, price, 'bo', funcLineX, funcLineY, 'r-')
 		plt.show()
