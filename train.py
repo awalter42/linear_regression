@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from statistics import mean
 import numpy as np
-import math
 
 
 def estimatePrice(mileage, model):
@@ -25,11 +24,12 @@ class Model:
 		self.nb_itter = 0
 
 		self.file = input('File with dataset: ')
+		self.error = False
 		try:
 			self.originalTab = self.__fillTab()
 		except:
-			print("There has been a problem with the file you sent")
-			return -1
+			self.error = True
+			return None
 		self.tab = self.__normalize()
 
 		self.loopTrain(1000)
@@ -38,10 +38,9 @@ class Model:
 	def __str__(self):
 		return(f"""
 file = {self.file}
-theta0 = {self.theta0}
-theta1 = {self.theta1}
 learning rate = {self.learningRate}
 iteration = {self.nb_itter}
+accuracy = {self.R2Score()}
 """)
 
 	def getOriginalTabs(self):
@@ -95,10 +94,12 @@ iteration = {self.nb_itter}
 		return new_tab
 
 
-	def meanSquareError(self):
-		mse = sum((estimatePrice(self.tab[i][0], self) - self.tab[i][1]) ** 2 for i in range (len(self.tab)))
-		mse /= 2 * len(self.tab)
-		return (mse)
+	def R2Score(self):
+		prices = [self.tab[i][1] for i in range(len(self.tab))]
+		meanVal = mean(prices)
+		RSS = sum((p - estimatePrice(m, self))**2 for m, p in self.tab)
+		TSS = sum((p - meanVal)**2 for m, p in self.tab)
+		return (1 - RSS/TSS)
 
 
 	def loopTrain(self, iterations):
