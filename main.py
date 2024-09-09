@@ -1,5 +1,6 @@
 from train import Model
 from predict import estimatePrice
+import sys
 
 WARNING = '\033[93m'
 ENDC = '\033[0m'
@@ -161,11 +162,13 @@ if __name__ == '__main__':
 					models[index].saveThetas()
 
 				case 7:
-					exit()
+					sys.exit()
 
 				case _:
 					print('Make sure to use a number that is valid')
 
+	except SystemExit:
+		sys.exit()
 	except:
 		print('\nThere has been a problem in the inputs you gave\n')
-		exit()
+		sys.exit()
