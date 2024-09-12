@@ -1,4 +1,5 @@
 from train import normalizeElem, denormalizeElem
+import sys
 
 
 def getData(file):
@@ -7,6 +8,7 @@ def getData(file):
 		file.readline()
 	except:
 		print(f'There has been a problem when fetching the file {file}')
+		sys.exit()
 	mileage = []
 	price = []
 	for line in file:
@@ -27,8 +29,12 @@ def estimatePrice(toEst, theta0, theta1, mileage, price):
 if __name__ == '__main__':
 	file = input('Where is the data? ')
 	mileage, price = getData(file)
-	theta0, theta1 = getData('thetas.csv')
-	theta0, theta1 = theta0[0], theta1[0]
+	try:
+		theta0, theta1 = getData('thetas.csv')
+		theta0, theta1 = theta0[0], theta1[0]
+	except SystemExit:
+		theta0, theta1 = 0, 0
+		print("There has been no thetas saved, so the following prediction will make no sense")
 
 	toEst = int(input('mileage to estimate: '))
 	if toEst < 0:

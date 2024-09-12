@@ -6,26 +6,6 @@ WARNING = '\033[93m'
 ENDC = '\033[0m'
 
 
-# def getModelInput(models):
-# 	keys = list(models.keys())
-# 	keys.sort()
-# 	if keys == []:
-# 		print('A model has yet to be created')
-# 		continue
-
-# 	print('Please select a model: \n')
-# 	for k in keys:
-# 		m = models[k]
-# 		print(f'\t\t{k} : trained on {m.getFile()} for {m.getNbItter()} iterations')
-
-# 	index = int(input('\n> '))
-# 	if index not in keys:
-# 		print('Next time, please choose an index that match an existing model')
-# 		continue
-# 	return index
-
-
-
 if __name__ == '__main__':
 	models = {}
 	nb_trained = 0
