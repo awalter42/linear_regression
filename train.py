@@ -11,10 +11,6 @@ def	normalizeElem(list, elem):
 	return ((elem - min(list)) / (max(list) - min(list)))
 
 
-def	denormalizeElem(list, elem):
-	return ((elem * (max(list) - min(list))) + min(list))
-
-
 class Model:
 
 	def __init__(self):
@@ -86,10 +82,10 @@ accuracy = {self.R2Score()}
 		maxM = max(mileages)
 		for mileage in mileages:
 			x.append((mileage - minM) / (maxM - minM))
-		minP = min(prices)
-		maxP = max(prices)
+		# minP = min(prices)
+		# maxP = max(prices)
 		for price in prices:
-			y.append((price - minP) / (maxP - minP))
+			y.append(price)
 		new_tab = [[x[i], y[i]] for i in range(len(x))]
 		return new_tab
 
@@ -146,7 +142,7 @@ accuracy = {self.R2Score()}
 		funcLineY = []
 		for e in funcLineX:
 			e = estimatePrice(normalizeElem(mileage, e), self)
-			funcLineY.append(denormalizeElem(price, e))
+			funcLineY.append(e)
 
 		ma = np.arange(0, 250000, 1000)
 		func = estimatePrice(ma, self)
