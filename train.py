@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from statistics import mean
-import numpy as np
 
 
 def estimatePrice(mileage, model):
@@ -143,9 +142,6 @@ accuracy = {self.R2Score()}
 		for e in funcLineX:
 			e = estimatePrice(normalizeElem(mileage, e), self)
 			funcLineY.append(e)
-
-		ma = np.arange(0, 250000, 1000)
-		func = estimatePrice(ma, self)
 
 		ax.plot(mileage, price, 'bo', funcLineX, funcLineY, 'r-')
 		plt.show()
