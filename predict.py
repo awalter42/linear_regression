@@ -21,7 +21,7 @@ def getData(file):
 def estimatePrice(toEst, theta0, theta1, mileage, price):
 	toEst = normalizeElem(mileage, float(toEst))
 	est = theta0 + (theta1 * toEst)
-	return est
+	return round(est, 2)
 
 
 if __name__ == '__main__':
