@@ -1,4 +1,4 @@
-from train import normalizeElem, denormalizeElem
+from train import normalizeElem
 import sys
 
 
