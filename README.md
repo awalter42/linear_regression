@@ -6,7 +6,7 @@ Usage
 ======================
 if you want to see the graphs `export QT_QPA_PLATFORM=wayland`
 
-```python
+```bash
 python3 main.py
 ```
 You can then follow the prompt to use the program
